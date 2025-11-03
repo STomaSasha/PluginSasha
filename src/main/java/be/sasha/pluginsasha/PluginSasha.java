@@ -47,6 +47,7 @@ public final class PluginSasha extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new MonListener(this), this);
 
         getLogger().info("PluginSasha activé !");
+        //Test commit
     }
 
     @Override
