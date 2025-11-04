@@ -22,3 +22,6 @@ commands:
   help:
     description: Help
     usage: /help
+  menu:
+    description: Ouvrir menu principal
+    uage: /menu

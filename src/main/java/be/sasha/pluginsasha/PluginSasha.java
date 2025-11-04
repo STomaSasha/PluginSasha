@@ -41,6 +41,7 @@ public final class PluginSasha extends JavaPlugin implements Listener {
         Objects.requireNonNull(getCommand("annonce")).setExecutor(new AnnonceCommand(this));
         Objects.requireNonNull(getCommand("message")).setExecutor(new MessageCommand(this));
         Objects.requireNonNull(getCommand("help")).setExecutor(new HelpCommand(this));
+        Objects.requireNonNull(getCommand("menu")).setExecutor(new MenuCommand(this));
 
 
         // Enregistrement des événements
