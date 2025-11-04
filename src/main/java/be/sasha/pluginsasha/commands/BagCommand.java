@@ -71,7 +71,7 @@ public class BagCommand implements CommandExecutor {
         List<?> items = config.getList("bags." + player.getUniqueId());
         Inventory inventory = Bukkit.createInventory(
                 new BagHolder(),
-                54,
+                36,
                 Component.text("Sac à dos de ", NamedTextColor.GOLD, TextDecoration.BOLD).append(Component.text(player.getName(), NamedTextColor.RED, TextDecoration.BOLD))
         );
 
