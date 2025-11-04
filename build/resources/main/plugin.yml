@@ -4,21 +4,25 @@ main: be.sasha.pluginsasha.PluginSasha
 api-version: '1.21'
 commands:
   spawn:
-    description: Téléporte au spawn
+    description: Se téléporter au spawn du serveur
     usage: /spawn
   setspawn:
-    description: Définit le spawn du serveur
+    description: Définir le spawn du serveur
     usage: /setspawn
   bag:
-    description: Voir inv
-    usage: /persistent
+    description: Ouvrir son sac à dos
+    usage: /bag
   annonce:
     description: Faire une annonce
+    permission: annonce.use
     usage: /annonce <message>
   message:
     aliases: msg
-    description: Envoyer un message privé au joueur
+    description: Envoyer un message privé à un joueur joueur
     usage: /msg <player> <message>
   help:
-    description: Help
+    description: Obtenir la liste des commandes du plugin
     usage: /help
+  menu:
+    description: Ouvrir le menu principal
+    uage: /menu

@@ -28,27 +28,26 @@ public final class PluginSasha extends JavaPlugin implements Listener {
         return commandDescriptions;
     }
 
-
     @Override
     public void onEnable() {
         saveDefaultConfig();
 
-        // Enregistrement de la commande /spawn
+        // --- Crée une instance unique de BagCommand ---
+        BagCommand bagCommand = new BagCommand(this);
 
+        // --- Enregistrement des commandes ---
         Objects.requireNonNull(getCommand("spawn")).setExecutor(new SpawnCommand(this));
         Objects.requireNonNull(getCommand("setspawn")).setExecutor(new SetSpawnCommand(this));
-        Objects.requireNonNull(getCommand("bag")).setExecutor(new BagCommand(this));
+        Objects.requireNonNull(getCommand("bag")).setExecutor(bagCommand);
         Objects.requireNonNull(getCommand("annonce")).setExecutor(new AnnonceCommand(this));
         Objects.requireNonNull(getCommand("message")).setExecutor(new MessageCommand(this));
         Objects.requireNonNull(getCommand("help")).setExecutor(new HelpCommand(this));
         Objects.requireNonNull(getCommand("menu")).setExecutor(new MenuCommand(this));
 
-
-        // Enregistrement des événements
-        getServer().getPluginManager().registerEvents(new MonListener(this), this);
+        // --- Enregistrement des événements ---
+        getServer().getPluginManager().registerEvents(new MonListener(this, bagCommand), this);
 
         getLogger().info("PluginSasha activé !");
-        //Test commit
     }
 
     @Override

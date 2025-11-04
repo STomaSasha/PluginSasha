@@ -12,9 +12,11 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class MonListener implements Listener {
 
     private final PluginSasha plugin;
+    private final BagCommand bagCommand;
 
-    public MonListener(PluginSasha plugin) {
+    public MonListener(PluginSasha plugin, BagCommand bagCommand) {
         this.plugin = plugin;
+        this.bagCommand = bagCommand;
     }
 
     @EventHandler
@@ -22,7 +24,7 @@ public class MonListener implements Listener {
         Player player = event.getPlayer();
         String pseudo = player.getName();
 
-        // Message personnel au joueur
+        // Message personnel
         player.sendMessage(Component.text("Bienvenue à toi !"));
 
         // Message global de bienvenue
@@ -33,6 +35,9 @@ public class MonListener implements Listener {
         } else {
             event.joinMessage(Component.text("§a" + pseudo + " a rejoint le serveur."));
         }
+
+        // Chargement du sac du joueur dès qu’il rejoint
+        bagCommand.handlePlayerJoin(player);
     }
 
     @EventHandler
@@ -49,7 +54,7 @@ public class MonListener implements Listener {
             event.quitMessage(Component.text("§c" + pseudo + " a quitté le serveur."));
         }
 
-        // Traitement spécifique au départ du joueur
-        BagCommand.handlePlayerQuit(player);
+        // Sauvegarde du sac du joueur
+        bagCommand.handlePlayerQuit(player);
     }
 }
