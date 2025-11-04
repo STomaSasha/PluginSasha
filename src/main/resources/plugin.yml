@@ -26,3 +26,6 @@ commands:
   menu:
     description: Ouvrir le menu principal
     uage: /menu
+  casino:
+    description: Ouvrir le casino
+    usage: /casino

@@ -1,10 +1,10 @@
 package be.sasha.pluginsasha.commands;
 
 import be.sasha.pluginsasha.PluginSasha;
+import be.sasha.pluginsasha.utils.InventoryBuilder;
+import be.sasha.pluginsasha.utils.ItemBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,10 +13,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 public class MenuCommand implements CommandExecutor, Listener {
@@ -25,7 +25,7 @@ public class MenuCommand implements CommandExecutor, Listener {
 
     public MenuCommand(PluginSasha plugin) {
         this.plugin = plugin;
-        Bukkit.getPluginManager().registerEvents(this, plugin);
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @Override
@@ -37,75 +37,67 @@ public class MenuCommand implements CommandExecutor, Listener {
             return true;
         }
 
-        MyInventory myInventory = new MyInventory(plugin);
-        player.openInventory(myInventory.getInventory());
+        openMenu(player);
         return true;
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        // We're getting the clicked inventory to avoid situations where the player
-        // already has a stone in their inventory and clicks that one.
         Inventory inventory = event.getClickedInventory();
-        // Add a null check in case the player clicked outside the window.
-        if (inventory == null || !(inventory.getHolder(false) instanceof MyInventory myInventory)) {
-            return;
-        }
+        if (inventory == null || !(inventory.getHolder() instanceof MyInventory)) return;
 
         event.setCancelled(true);
 
         ItemStack clicked = event.getCurrentItem();
-        // Check if the player clicked the stone.
-        if (clicked != null && clicked.getType() == Material.STONE) {
-            // Use the method we have on MyInventory to increment the field
-            // and update the counter.
-            myInventory.addClick();
+        if (clicked == null) return;
+
+        // Ici tu peux gérer ce que chaque item fait
+        if (clicked.getType() == Material.DIAMOND) {
+            event.getWhoClicked().sendMessage("Tu as choisi l'option Diamant !");
+        } else if (clicked.getType() == Material.GOLD_INGOT) {
+            event.getWhoClicked().sendMessage("Tu as choisi l'option Or !");
+        } else if (clicked.getType() == Material.EMERALD) {
+            event.getWhoClicked().sendMessage("Tu as choisi l'option Emeraude !");
         }
     }
 
-    private static class MyInventory implements InventoryHolder {
+    @EventHandler
+    public void onRightClickMenuStick(PlayerInteractEvent event) {
+        switch (event.getAction()) {
+            case RIGHT_CLICK_AIR, RIGHT_CLICK_BLOCK -> {
+                ItemStack item = event.getItem();
+                if (item == null || item.getType() != Material.STICK) return;
 
+                if (!item.hasItemMeta()) return;
+
+                if (!item.getItemMeta().displayName().equals(Component.text("§aMenu Principal"))) return;
+
+                Player player = event.getPlayer();
+                openMenu(player);
+            }
+        }
+    }
+
+    private void openMenu(Player player) {
+        MyInventory menu = new MyInventory(plugin);
+        player.openInventory(menu.getInventory());
+    }
+
+    private static class MyInventory implements InventoryHolder {
         private final Inventory inventory;
 
-        private int clicks = 0;
-
         public MyInventory(PluginSasha plugin) {
-            this.inventory = plugin.getServer().createInventory(
-                    this,
-                    27,
-                    Component.text("Mon Menu", NamedTextColor.GOLD, TextDecoration.BOLD)
-            );
+            this.inventory = new InventoryBuilder(this, 9, "Choisis ton option !").build();
 
-            ItemStack stone = new ItemStack(Material.STONE);
-            ItemMeta meta = stone.getItemMeta();
-            if (meta != null) {
-                meta.displayName(Component.text("Clique !", NamedTextColor.GOLD));
-                stone.setItemMeta(meta);
-            }
-
-
-
-            this.inventory.setItem(13, stone);
+            // Exemple d'items de menu
+            inventory.setItem(2, new ItemBuilder(Material.DIAMOND).setName("Option Diamant").build());
+            inventory.setItem(4, new ItemBuilder(Material.GOLD_INGOT).setName("Option Or").build());
+            inventory.setItem(6, new ItemBuilder(Material.EMERALD).setName("Option Émeraude").build());
         }
 
         @Override
         public Inventory getInventory() {
             return inventory;
         }
-
-
-
-        // A method we will call in the listener whenever the player clicks the stone.
-        public void addClick() {
-            this.clicks++;
-            this.updateCounter();
-        }
-
-        // A method that will update the counter item.
-        private void updateCounter() {
-            this.inventory.setItem(13, ItemStack.of(Material.BEDROCK, this.clicks));
-        }
     }
-
-
 }

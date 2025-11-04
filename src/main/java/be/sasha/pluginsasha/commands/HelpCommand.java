@@ -1,6 +1,7 @@
 package be.sasha.pluginsasha.commands;
 
 import be.sasha.pluginsasha.PluginSasha;
+import net.kyori.adventure.text.Component;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -29,8 +30,8 @@ public class HelpCommand implements CommandExecutor {
             if (pluginCommand != null) {
                 String usage = pluginCommand.getUsage();
                 String description = pluginCommand.getDescription();
-
-                sender.sendMessage("§e" + usage + " §7- " + description);
+                Component helpMsg = Component.text("§e" + usage + " §7- " + description);
+                sender.sendMessage(helpMsg);
             }
         }
 
