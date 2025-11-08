@@ -1,0 +1,13 @@
+grades:
+  Joueur:
+    prefix: "[§7Joueur]"
+    permissions: []
+  VIP:
+    prefix: "§e§l[VIP] §r§e"
+    permissions:
+      - plugin.vip.menu
+  Owner:
+    prefix: "§4§l[Owner] §r§4"
+    permissions:
+      - plugin.admin.*
+      - plugin.*

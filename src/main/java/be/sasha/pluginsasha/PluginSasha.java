@@ -1,6 +1,7 @@
 package be.sasha.pluginsasha;
 
 import be.sasha.pluginsasha.commands.*;
+import be.sasha.pluginsasha.grades.GradeManager;
 import be.sasha.pluginsasha.listeners.*;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -25,6 +26,8 @@ public final class PluginSasha extends JavaPlugin implements Listener {
 
     private final Map<String, String> commandDescriptions = new HashMap<>();
 
+    private GradeManager gradeManager;
+
     public Map<String, String> getCommandDescriptions() {
         return commandDescriptions;
     }
@@ -36,6 +39,7 @@ public final class PluginSasha extends JavaPlugin implements Listener {
         // --- Crée une instance unique de BagCommand et MenuCommand ---
         BagCommand bagCommand = new BagCommand(this);
         MenuCommand menuCommand = new MenuCommand(this); // ✅ instancié une seule fois
+        gradeManager = new GradeManager(this);
 
         // --- Enregistrement des commandes ---
 
@@ -62,6 +66,8 @@ public final class PluginSasha extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new MonListener(this, bagCommand), this);
         // ✅ MenuCommand s'enregistre lui-même dans son constructeur, donc pas besoin de le refaire ici
 
+        Objects.requireNonNull(getCommand("setgrade")).setExecutor(new SetGradeCommand(gradeManager));
+
         getLogger().info("PluginSasha activé !");
     }
 
@@ -70,6 +76,7 @@ public final class PluginSasha extends JavaPlugin implements Listener {
 
         getLogger().info("PluginSasha désactivé !");
         getServer().getScheduler().cancelTasks(this);
+        gradeManager.savePlayerGrades();
     }
 
     private final Map<Player, Long> sessionStartTimes = new HashMap<>();
@@ -82,6 +89,10 @@ public final class PluginSasha extends JavaPlugin implements Listener {
         Long start = sessionStartTimes.get(player);
         if (start == null) return 0;
         return (System.currentTimeMillis() - start) / 1000; // en secondes
+    }
+
+    public GradeManager getGradeManager() {
+        return gradeManager;
     }
 
 }

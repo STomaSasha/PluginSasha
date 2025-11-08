@@ -29,3 +29,6 @@ commands:
   casino:
     description: Ouvrir le casino
     usage: /casino
+  setgrade:
+    description: Définir le grade d'un joueur
+    usage:

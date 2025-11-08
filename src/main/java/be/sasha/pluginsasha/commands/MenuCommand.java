@@ -55,6 +55,7 @@ public class MenuCommand implements CommandExecutor, Listener {
         long sessionSeconds = plugin.getSessionDuration(player);
         String totalTime = formatTime(totalSeconds);
         String sessionTime = formatTime(sessionSeconds);
+        String grade = plugin.getGradeManager().getGrade(player);
 
 
 
