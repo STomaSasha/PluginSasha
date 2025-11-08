@@ -15,9 +15,29 @@ public class InventoryBuilder {
     }
 
     public InventoryBuilder addItem(int slot, ItemStack item) {
-        inventory.setItem(slot, item);
+        if (slot >= 0 && slot < inventory.getSize()) {
+            inventory.setItem(slot, item);
+        } else if (slot == -1) {
+            int size = inventory.getSize();
+            int rows = size / 9;
+
+            for (int i = 0; i < size; i++) {
+                int col = i % 9;
+                int row = i / 9;
+
+                boolean isTopRow = row == 0;
+                boolean isBottomRow = row == rows - 1;
+                boolean isLeftCol = col == 0;
+                boolean isRightCol = col == 8;
+
+                if (isTopRow || isBottomRow || isLeftCol || isRightCol) {
+                    inventory.setItem(i, item);
+                }
+            }
+        }
         return this;
     }
+
 
     public Inventory build() {
         return inventory;

@@ -18,6 +18,7 @@ public class HelpCommand implements CommandExecutor {
         this.plugin = plugin;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         sender.sendMessage("§6§lListe des commandes disponibles :");

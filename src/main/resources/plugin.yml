@@ -25,7 +25,7 @@ commands:
     usage: /help
   menu:
     description: Ouvrir le menu principal
-    uage: /menu
+    usage: /menu
   casino:
     description: Ouvrir le casino
     usage: /casino

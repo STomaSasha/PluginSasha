@@ -3,6 +3,7 @@ package be.sasha.pluginsasha.commands;
 import be.sasha.pluginsasha.PluginSasha;
 import be.sasha.pluginsasha.utils.InventoryBuilder;
 import be.sasha.pluginsasha.utils.ItemBuilder;
+import net.kyori.adventure.audience.ForwardingAudience;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -56,7 +57,7 @@ public class CasinoCommand implements CommandExecutor, Listener {
             switch (clicked.getType()) {
                 case DIAMOND -> {
                     // Exemple : ajouter des actions spécifiques
-                    casinoInventory.spinWheel();
+                    event.getWhoClicked().sendMessage("Spinning wheel");
                 }
                 case EMERALD -> {
                     event.getWhoClicked().sendMessage("§aVous avez cliqué sur l'émeraude !");
@@ -98,10 +99,5 @@ public class CasinoCommand implements CommandExecutor, Listener {
             return inventory;
         }
 
-        // Exemple d'action
-        public void spinWheel() {
-            // Ici tu peux gérer le "spin" du casino
-            System.out.println("Roulette spin!");
-        }
     }
 }

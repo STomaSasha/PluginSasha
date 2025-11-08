@@ -3,11 +3,13 @@ package be.sasha.pluginsasha.listeners;
 import be.sasha.pluginsasha.PluginSasha;
 import be.sasha.pluginsasha.commands.BagCommand;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -30,6 +32,7 @@ public class MonListener implements Listener {
     public void onJoinPlayer(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         String pseudo = player.getName();
+        plugin.setSessionStart(event.getPlayer());
 
         // Message personnel
         player.sendMessage(Component.text("Bienvenue à toi !"));
@@ -114,6 +117,20 @@ public class MonListener implements Listener {
                     });
                 }
             }
+        }
+    }
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (event.getClickedInventory() != event.getView().getTopInventory()) return;
+        event.setCancelled(true);
+
+        ItemStack clicked = event.getCurrentItem();
+        if (clicked == null || clicked.getType() == Material.AIR) return;
+
+        if (clicked.getType() == Material.AIR) return;
+        if (clicked.getType() == Material.REDSTONE_TORCH) {
+            if (event.getWhoClicked() instanceof Player whoClickedPlayer) {
+                whoClickedPlayer.performCommand("annonce Salut"); }
         }
     }
 }

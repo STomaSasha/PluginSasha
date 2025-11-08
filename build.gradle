@@ -12,10 +12,17 @@ repositories {
         name = "papermc-repo"
         url = "https://repo.papermc.io/repository/maven-public/"
     }
+    maven {
+        name = "Mojang"
+        url = "https://libraries.minecraft.net/"
+    }
 }
 
 dependencies {
+    compileOnly("com.mojang:authlib:1.5.25")
+
     compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
+
 }
 
 tasks {
