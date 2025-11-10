@@ -145,4 +145,8 @@ public class GradeManager {
     public boolean hasGrade(Player player, String grade) {
         return grade.equalsIgnoreCase(getGrade(player));
     }
+
+    public Map<String, Grade> getGradeDefinitions() {
+        return gradeDefinitions;
+    }
 }

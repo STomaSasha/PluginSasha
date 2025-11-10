@@ -7,7 +7,10 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Optional;
+
 public class SetGradeCommand implements CommandExecutor {
+
     private final GradeManager gradeManager;
     private final String prefix = "§5[GradeManager] §r";
 
@@ -17,30 +20,62 @@ public class SetGradeCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+
+        // --- /setgrade <grade> (pour soi-même)
         if (args.length == 1 && sender instanceof Player player) {
-            // /setgrade <grade> → pour soi-même
-            String grade = args[0];
-            gradeManager.setGrade(player, grade);
-            player.sendMessage(prefix + "§aTon grade a été défini sur §e" + grade);
-            return true;
-        }
+            String input = args[0];
 
-        if (args.length == 2) {
-            // /setgrade <joueur> <grade> → pour un autre joueur
-            Player target = Bukkit.getPlayer(args[0]);
-            String grade = args[1];
-
-            if (target == null) {
-                sender.sendMessage("§cJoueur introuvable.");
+            // Vérification du grade (ignore-case)
+            Optional<String> match = findMatchingGrade(input);
+            if (match.isEmpty()) {
+                player.sendMessage(prefix + "§cLe grade '" + input + "' n'existe pas !");
                 return true;
             }
 
-            gradeManager.setGrade(target, grade);
-            sender.sendMessage(prefix + "§aGrade de " + target.getName() + " défini sur §e" + grade);
+            String realGrade = match.get();
+            gradeManager.setGrade(player, realGrade);
+            player.sendMessage(prefix + "§aTon grade a été défini sur §e" + realGrade);
             return true;
         }
 
-        sender.sendMessage("§cUtilisation: /setgrade <joueur> <grade> ou /setgrade <grade>");
+        // --- /setgrade <joueur> <grade>
+        if (args.length == 2) {
+            String playerName = args[0];
+            String inputGrade = args[1];
+
+            Player target = Bukkit.getPlayer(playerName);
+            if (target == null) {
+                sender.sendMessage(prefix + "§cLe joueur '" + playerName + "' n'est pas connecté.");
+                return true;
+            }
+
+            // Vérification du grade (ignore-case)
+            Optional<String> match = findMatchingGrade(inputGrade);
+            if (match.isEmpty()) {
+                sender.sendMessage(prefix + "§cLe grade '" + inputGrade + "' n'existe pas !");
+                return true;
+            }
+
+            String realGrade = match.get();
+            gradeManager.setGrade(target, realGrade);
+
+            sender.sendMessage(prefix + "§aLe grade de §e" + target.getName() + " §aa été défini sur §e" + realGrade);
+            return true;
+        }
+
+        // Mauvaise utilisation
+        sender.sendMessage("§cUtilisation: /setgrade <grade> ou /setgrade <joueur> <grade>");
         return true;
+    }
+
+    /**
+     * Tente de trouver le grade correspondant en ignorant les majuscules/minuscules.
+     * Retourne un Optional<String> avec le vrai nom du grade si trouvé.
+     */
+    private Optional<String> findMatchingGrade(String input) {
+        return gradeManager.getGradeDefinitions().keySet()
+                .stream()
+                .filter(g -> g.equalsIgnoreCase(input))
+                .findFirst();
     }
 }

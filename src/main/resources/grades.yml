@@ -1,6 +1,6 @@
 grades:
   Joueur:
-    prefix: "[§7Joueur]"
+    prefix: "§7[Joueur] "
     permissions: []
   VIP:
     prefix: "§e§l[VIP] §r§e"

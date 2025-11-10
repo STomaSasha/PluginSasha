@@ -34,6 +34,13 @@ public class MonListener implements Listener {
         String pseudo = player.getName();
         plugin.setSessionStart(event.getPlayer());
 
+        // ✅ Vérification/assignation du rôle par défaut
+        String uuid = player.getUniqueId().toString();
+        if (!plugin.getConfig().contains("grades." + uuid)) {
+            plugin.getConfig().set("grades." + uuid, "joueur"); // rôle par défaut
+            plugin.saveConfig();
+        }
+
         // Message personnel
         player.sendMessage(Component.text("Bienvenue à toi !"));
 
@@ -58,10 +65,9 @@ public class MonListener implements Listener {
             menuCompass.setItemMeta(meta);
         }
 
-        // Mettre la boussole au milieu de la barre principale
         player.getInventory().setItem(4, menuCompass);
 
-        // Chargement du sac du joueur dès qu’il rejoint
+        // Sac du joueur
         bagCommand.handlePlayerJoin(player);
     }
 
@@ -82,6 +88,7 @@ public class MonListener implements Listener {
         // Sauvegarde du sac du joueur
         bagCommand.handlePlayerQuit(player);
     }
+
 
     @EventHandler
     public void onRightClickStick(PlayerInteractEvent event) {

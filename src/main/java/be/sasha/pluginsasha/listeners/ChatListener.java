@@ -12,6 +12,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 public class ChatListener implements Listener {
 
     private final PluginSasha plugin;
+    private final LegacyComponentSerializer legacy = LegacyComponentSerializer.legacySection();
 
     public ChatListener(PluginSasha plugin) {
         this.plugin = plugin;
@@ -20,18 +21,21 @@ public class ChatListener implements Listener {
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
-
-        // Récupération du préfixe
         String prefix = plugin.getGradeManager().getPrefix(player);
 
-        // Empêche l’event de gérer lui-même l’envoi du message
+        // Empêcher l’event d’envoyer le message
         event.setCancelled(true);
 
-        // Construction du message + conversion legacy -> Adventure
-        String rawMessage = prefix + player.getName() + " §r " + event.getMessage();
-        Component message = LegacyComponentSerializer.legacySection().deserialize(rawMessage);
+        // Construction du texte avec couleurs
+        String raw = prefix + player.getName() + " §r: " + event.getMessage();
+        Component component = legacy.deserialize(raw);
 
-        // Envoi du message à tous les joueurs
-        Bukkit.broadcast(message);
+        // Broadcast adventure
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.sendMessage(component);
+        }
+
+        // Console
+        Bukkit.getConsoleSender().sendMessage(raw);
     }
 }
