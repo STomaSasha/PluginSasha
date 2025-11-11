@@ -38,6 +38,7 @@ public final class PluginSasha extends JavaPlugin implements Listener {
         Objects.requireNonNull(getCommand("menu")).setExecutor(menuCommand);
         Objects.requireNonNull(getCommand("casino")).setExecutor(new CasinoCommand(this));
         Objects.requireNonNull(getCommand("setgrade")).setExecutor(new SetGradeCommand(gradeManager));
+        Objects.requireNonNull(getCommand("fly")).setExecutor(new FlyCommand(this));
 
         // --- Enregistrement des listeners ---
         getServer().getPluginManager().registerEvents(menuCommand, this);

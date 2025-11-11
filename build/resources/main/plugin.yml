@@ -9,12 +9,14 @@ commands:
   setspawn:
     description: Définir le spawn du serveur
     usage: /setspawn
+    permission: pluginsasha.commands.setspawn
   bag:
     description: Ouvrir son sac à dos
     usage: /bag
+    permission: pluginsasha.commands.bag
   annonce:
     description: Faire une annonce
-    permission: annonce.use
+    permission: pluginsasha.commands.annonce
     usage: /annonce <message>
   message:
     aliases: msg
@@ -31,4 +33,9 @@ commands:
     usage: /casino
   setgrade:
     description: Définir le grade d'un joueur
-    usage:
+    usage: /setgrade <joueur> <grade>
+    permission: pluginsasha.commands.setgrade
+  fly:
+    description: Activer le fly
+    usage: /fly [<joueur>] [<on/off>]
+    permission: pluginsasha.commands.fly
