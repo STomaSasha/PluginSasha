@@ -5,9 +5,10 @@ grades:
   VIP:
     prefix: "§e§l[VIP] §r§e"
     permissions:
-      - plugin.vip.menu
+      - pluginsasha
+      -
   Owner:
     prefix: "§4§l[Owner] §r§4"
     permissions:
-      - plugin.admin.*
-      - plugin.*
+      - pluginsasha.commands.*
+      - pluginsasha.*

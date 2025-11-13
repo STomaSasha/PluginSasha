@@ -29,8 +29,10 @@ public class MenuFactory {
         String valeurDiscord="eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzM5ZWU3MTU0OTc5YjNmODc3MzVhMWM4YWMwODc4MTRiNzkyOGQwNTc2YTI2OTViYTAxZWQ2MTYzMTk0MjA0NSJ9fX0=";
         return new InventoryBuilder(new MenuHolder("menuPrincipal"), 45, "§7§lMenu Principal")
                 .addItem(-1, new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).setName("").build())
-                .addItem(36, new ItemBuilder(Material.PLAYER_HEAD).setCustomHeadTexture(valeurDiscord).setName("§l§9Notre discord").setLore("§7Rejoins nous!").build())
-                .addItem(40, getPlayerHead(player))
+                .addItem(21, new ItemBuilder(Material.GRASS_BLOCK).setName("§a§lMonde survie").setLore("§8Clique pour te téléporter").build())
+                .addItem(36, new ItemBuilder(Material.PLAYER_HEAD).setCustomHeadTexture(valeurDiscord).setName("§l§9Notre discord").setLore("§8Rejoins nous!").build())
+                .addItem(40, new ItemBuilder(Material.ENDER_PEARL).setName("§7§lSpawn").setLore("§8Clique pour te téléporter").build())
+                .addItem(44, getPlayerHead(player))
 
                 .build();
     }
@@ -55,7 +57,7 @@ public class MenuFactory {
         if (meta != null) {
             meta.setOwningPlayer(player);
             Component name = Component.text(player.getName())
-                    .color(NamedTextColor.YELLOW)
+                    .color(NamedTextColor.DARK_PURPLE)
                     .decorate(TextDecoration.BOLD);
             meta.displayName(name);
             head.setItemMeta(meta);

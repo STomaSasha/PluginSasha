@@ -39,3 +39,7 @@ commands:
     description: Activer le fly
     usage: /fly [<joueur>] [<on/off>]
     permission: pluginsasha.commands.fly
+  world:
+    description: Gestion des mondes (create, list, tp, delete)
+    usage: /world <subcommand>
+    permission: pluginsasha.commands.worlds

@@ -3,10 +3,13 @@ package be.sasha.pluginsasha.commands;
 import be.sasha.pluginsasha.PluginSasha;
 import be.sasha.pluginsasha.utils.MenuFactory;
 import be.sasha.pluginsasha.utils.MenuHolder;
+import be.sasha.pluginsasha.grades.GradeManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Statistic;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -68,12 +71,23 @@ public class MenuCommand implements CommandExecutor, Listener {
         if (holder instanceof MenuHolder menuHolder) {
             switch (menuHolder.getId()) {
                 case "menuPrincipal":
+                    if (event.getSlot() == 21 && clicked.getType() == Material.GRASS_BLOCK) {
+                        World world = Bukkit.getWorld("world");
+                        if (world != null) {
+                            player.teleport(world.getSpawnLocation());
+                        } else {
+                            player.sendMessage("§cLe monde 'world' n'existe pas ou n'est pas chargé !");
+                        }
+                    }
                     if (event.getSlot() == 36 && clicked.getType() == Material.PLAYER_HEAD) {
                         player.sendMessage(Component.text("§7Pour nous rejoindre sur Discord, ")
                                 .append(Component.text("§n§l§9clique ici !")
                                         .clickEvent(ClickEvent.openUrl("https://discord.gg/laube"))));
                     }
-                    if (event.getSlot() == 40 && clicked.getType() == Material.PLAYER_HEAD) {
+                    if (event.getSlot() == 40 && clicked.getType() == Material.ENDER_PEARL) {
+                        player.performCommand("spawn");
+                    }
+                    if (event.getSlot() == 44 && clicked.getType() == Material.PLAYER_HEAD) {
 
                         player.sendMessage(Component.text("§6§n§l"+player.getName()+":"
                                 +"\n§r§eVie: §7"+player.getHealthScale()

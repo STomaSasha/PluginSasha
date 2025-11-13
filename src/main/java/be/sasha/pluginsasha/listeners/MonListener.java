@@ -4,11 +4,15 @@ import be.sasha.pluginsasha.PluginSasha;
 import be.sasha.pluginsasha.commands.BagCommand;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -33,6 +37,9 @@ public class MonListener implements Listener {
         Player player = event.getPlayer();
         String pseudo = player.getName();
         plugin.setSessionStart(event.getPlayer());
+        Location spawn = plugin.getSpawnLocation();
+
+        player.performCommand("/spawn");
 
         // ✅ Vérification/assignation du rôle par défaut
         String uuid = player.getUniqueId().toString();
@@ -139,5 +146,41 @@ public class MonListener implements Listener {
             if (event.getWhoClicked() instanceof Player whoClickedPlayer) {
                 whoClickedPlayer.performCommand("annonce Salut"); }
         }
+    }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        Player player = event.getEntity();
+        Location loc = player.getLocation();
+        Block block = loc.getBlock();
+
+        if (!block.getType().isAir()) {
+            block = block.getRelative(0, 1, 0);
+        }
+
+        // Variable finale pour la lambda
+        final Block finalBlock = block;
+
+        block.setType(Material.CHEST);
+        Chest chest = (Chest) block.getState();
+
+        for (ItemStack item : event.getDrops()) {
+            if (item != null) {
+                chest.getInventory().addItem(item);
+            }
+        }
+
+        event.getDrops().clear();
+
+        player.sendMessage("§cVous êtes mort ! Votre inventaire est dans un coffre en §7§lX:"
+                + loc.getX() + " Y:" + loc.getY() + " Z:" + loc.getZ());
+
+        // ✅ Utilisation de la variable finale dans la lambda
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (finalBlock.getType() == Material.CHEST) {
+                finalBlock.setType(Material.AIR);
+                player.sendMessage("§7Votre coffre de mort a disparu.");
+            }
+        }, 20L * 60L * 5L);
     }
 }

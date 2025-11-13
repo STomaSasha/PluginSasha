@@ -1,13 +1,16 @@
 package be.sasha.pluginsasha;
 
 import be.sasha.pluginsasha.commands.*;
-import be.sasha.pluginsasha.grades.GradeManager;
+import be.sasha.pluginsasha.grades.*;
 import be.sasha.pluginsasha.listeners.*;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -39,6 +42,7 @@ public final class PluginSasha extends JavaPlugin implements Listener {
         Objects.requireNonNull(getCommand("casino")).setExecutor(new CasinoCommand(this));
         Objects.requireNonNull(getCommand("setgrade")).setExecutor(new SetGradeCommand(gradeManager));
         Objects.requireNonNull(getCommand("fly")).setExecutor(new FlyCommand(this));
+        Objects.requireNonNull(getCommand("world")).setExecutor(new WorldCommand(this));
 
         // --- Enregistrement des listeners ---
         getServer().getPluginManager().registerEvents(menuCommand, this);
@@ -46,6 +50,8 @@ public final class PluginSasha extends JavaPlugin implements Listener {
 
         // ✅ AJOUT IMPORTANT : enregistrement du listener de chat
         getServer().getPluginManager().registerEvents(new ChatListener(this), this);
+
+        loadExistingWorlds();
 
         getLogger().info("PluginSasha activé !");
     }
@@ -81,6 +87,46 @@ public final class PluginSasha extends JavaPlugin implements Listener {
 
     public GradeManager getGradeManager() {
         return gradeManager;
+    }
+
+    private void safeRegister(String cmd, CommandExecutor executor) {
+        if (getCommand(cmd) != null) {
+            getCommand(cmd).setExecutor(executor);
+        } else {
+            getLogger().warning("⚠️ Commande introuvable dans plugin.yml : " + cmd);
+        }
+    }
+
+    private void loadExistingWorlds() {
+        File folder = getServer().getWorldContainer();
+
+        if (!folder.exists()) return;
+
+        File[] worldFolders = folder.listFiles(File::isDirectory);
+        if (worldFolders == null) return;
+
+        for (File worldFolder : worldFolders) {
+            String name = worldFolder.getName();
+
+            // Ignore les mondes par défaut
+            if (name.equalsIgnoreCase("world") ||
+                    name.equalsIgnoreCase("world_nether") ||
+                    name.equalsIgnoreCase("world_the_end")) {
+                continue;
+            }
+
+            // Vérifie que c’est bien un dossier de monde (doit contenir level.dat)
+            File level = new File(worldFolder, "level.dat");
+            if (!level.exists()) continue;
+
+            // Si le monde n’est pas déjà chargé, on le charge
+            if (Bukkit.getWorld(name) == null) {
+                getLogger().info("Chargement du monde existant : " + name);
+                new org.bukkit.WorldCreator(name).createWorld();
+            }
+        }
+
+        getLogger().info("Tous les mondes existants ont été chargés !");
     }
 
 }
