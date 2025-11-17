@@ -43,3 +43,9 @@ commands:
     description: Gestion des mondes (create, list, tp, delete)
     usage: /world <subcommand>
     permission: pluginsasha.commands.worlds
+  register:
+    description: Enregister un mot de passe
+    usage: /register <mdp> <confirmMdp>
+  login:
+    description: Se connecter
+    usage: /login <mdp>

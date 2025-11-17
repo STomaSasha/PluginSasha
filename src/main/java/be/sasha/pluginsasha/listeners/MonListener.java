@@ -2,6 +2,7 @@ package be.sasha.pluginsasha.listeners;
 
 import be.sasha.pluginsasha.PluginSasha;
 import be.sasha.pluginsasha.commands.BagCommand;
+import be.sasha.pluginsasha.commands.MenuCommand;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -36,15 +37,15 @@ public class MonListener implements Listener {
     public void onJoinPlayer(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         String pseudo = player.getName();
-        plugin.setSessionStart(event.getPlayer());
+        plugin.setSessionStart(player);
         Location spawn = plugin.getSpawnLocation();
 
-        player.performCommand("/spawn");
+        player.performCommand("spawn");
 
-        // ✅ Vérification/assignation du rôle par défaut
+        // Vérification/assignation du rôle par défaut
         String uuid = player.getUniqueId().toString();
         if (!plugin.getConfig().contains("grades." + uuid)) {
-            plugin.getConfig().set("grades." + uuid, "joueur"); // rôle par défaut
+            plugin.getConfig().set("grades." + uuid, "joueur");
             plugin.saveConfig();
         }
 
@@ -60,10 +61,8 @@ public class MonListener implements Listener {
             event.joinMessage(Component.text("§a" + pseudo + " a rejoint le serveur."));
         }
 
-        // Clear l'inventaire
+        // Clear inventaire et donner la boussole
         player.getInventory().clear();
-
-        // Donner la boussole spéciale
         ItemStack menuCompass = new ItemStack(Material.COMPASS);
         ItemMeta meta = menuCompass.getItemMeta();
         if (meta != null) {
@@ -71,10 +70,8 @@ public class MonListener implements Listener {
             meta.lore(List.of(Component.text("§7Clique droit pour ouvrir")));
             menuCompass.setItemMeta(meta);
         }
-
         player.getInventory().setItem(4, menuCompass);
 
-        // Sac du joueur
         bagCommand.handlePlayerJoin(player);
     }
 
@@ -83,7 +80,6 @@ public class MonListener implements Listener {
         Player player = event.getPlayer();
         String pseudo = player.getName();
 
-        // Message global de départ
         String msgQuit = plugin.getConfig().getString("leave-message");
         if (msgQuit != null && !msgQuit.isEmpty()) {
             msgQuit = msgQuit.replace("%player%", pseudo);
@@ -92,10 +88,8 @@ public class MonListener implements Listener {
             event.quitMessage(Component.text("§c" + pseudo + " a quitté le serveur."));
         }
 
-        // Sauvegarde du sac du joueur
         bagCommand.handlePlayerQuit(player);
     }
-
 
     @EventHandler
     public void onRightClickStick(PlayerInteractEvent event) {
@@ -109,30 +103,27 @@ public class MonListener implements Listener {
 
                 Player player = event.getPlayer();
 
-                // Stick "Salut"
                 if (item.getType() == Material.STICK
                         && meta.hasDisplayName() && meta.displayName().equals(Component.text("Salut"))
                         && meta.hasLore() && meta.lore().contains(Component.text("Clique droit"))) {
-                    // Explosion visuelle sans dégâts ni destruction
+
                     player.getWorld().createExplosion(player.getLocation(), 0f, false, false);
                     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1f, 1f);
-                    // Faire sauter le joueur
                     player.setVelocity(player.getVelocity().add(new org.bukkit.util.Vector(0, 1.2, 0)));
                 }
 
-                // Boussole "Menu Principal" (ouvre le menu)
                 if (item.getType() == Material.COMPASS
                         && meta.hasDisplayName() && meta.displayName().equals(Component.text("§aMenu Principal"))
                         && meta.hasLore() && meta.lore().contains(Component.text("§7Clique droit pour ouvrir"))) {
-                    // Ouvrir le menu
+
                     plugin.getServer().getScheduler().runTask(plugin, () -> {
-                        new be.sasha.pluginsasha.commands.MenuCommand(plugin)
-                                .onCommand(player, null, "menu", new String[]{});
+                        new MenuCommand(plugin).onCommand(player, null, "menu", new String[]{});
                     });
                 }
             }
         }
     }
+
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getClickedInventory() != event.getView().getTopInventory()) return;
@@ -141,10 +132,8 @@ public class MonListener implements Listener {
         ItemStack clicked = event.getCurrentItem();
         if (clicked == null || clicked.getType() == Material.AIR) return;
 
-        if (clicked.getType() == Material.AIR) return;
-        if (clicked.getType() == Material.REDSTONE_TORCH) {
-            if (event.getWhoClicked() instanceof Player whoClickedPlayer) {
-                whoClickedPlayer.performCommand("annonce Salut"); }
+        if (clicked.getType() == Material.REDSTONE_TORCH && event.getWhoClicked() instanceof Player whoClickedPlayer) {
+            whoClickedPlayer.performCommand("annonce Salut");
         }
     }
 
@@ -158,16 +147,12 @@ public class MonListener implements Listener {
             block = block.getRelative(0, 1, 0);
         }
 
-        // Variable finale pour la lambda
         final Block finalBlock = block;
-
         block.setType(Material.CHEST);
         Chest chest = (Chest) block.getState();
 
         for (ItemStack item : event.getDrops()) {
-            if (item != null) {
-                chest.getInventory().addItem(item);
-            }
+            if (item != null) chest.getInventory().addItem(item);
         }
 
         event.getDrops().clear();
@@ -175,7 +160,6 @@ public class MonListener implements Listener {
         player.sendMessage("§cVous êtes mort ! Votre inventaire est dans un coffre en §7§lX:"
                 + loc.getX() + " Y:" + loc.getY() + " Z:" + loc.getZ());
 
-        // ✅ Utilisation de la variable finale dans la lambda
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (finalBlock.getType() == Material.CHEST) {
                 finalBlock.setType(Material.AIR);

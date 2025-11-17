@@ -1,8 +1,12 @@
 package be.sasha.pluginsasha;
 
 import be.sasha.pluginsasha.commands.*;
-import be.sasha.pluginsasha.grades.*;
+import be.sasha.pluginsasha.grades.GradeManager;
 import be.sasha.pluginsasha.listeners.*;
+import be.sasha.pluginsasha.login.LoginCommand;
+import be.sasha.pluginsasha.login.LoginListener;
+import be.sasha.pluginsasha.login.LoginManager;
+import be.sasha.pluginsasha.login.RegisterCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
@@ -23,6 +27,8 @@ public final class PluginSasha extends JavaPlugin implements Listener {
 
     private final Map<Player, Long> sessionStartTimes = new HashMap<>();
 
+    private LoginManager loginManager;
+
     @Override
     public void onEnable() {
         saveDefaultConfig();
@@ -30,6 +36,8 @@ public final class PluginSasha extends JavaPlugin implements Listener {
         BagCommand bagCommand = new BagCommand(this);
         MenuCommand menuCommand = new MenuCommand(this);
         gradeManager = new GradeManager(this);
+
+        loginManager = new LoginManager(this);
 
         // --- Enregistrement des commandes ---
         Objects.requireNonNull(getCommand("spawn")).setExecutor(new SpawnCommand(this));
@@ -43,13 +51,14 @@ public final class PluginSasha extends JavaPlugin implements Listener {
         Objects.requireNonNull(getCommand("setgrade")).setExecutor(new SetGradeCommand(gradeManager));
         Objects.requireNonNull(getCommand("fly")).setExecutor(new FlyCommand(this));
         Objects.requireNonNull(getCommand("world")).setExecutor(new WorldCommand(this));
+        Objects.requireNonNull(getCommand("register")).setExecutor(new RegisterCommand(this));
+        Objects.requireNonNull(getCommand("login")).setExecutor(new LoginCommand(this));
 
         // --- Enregistrement des listeners ---
         getServer().getPluginManager().registerEvents(menuCommand, this);
         getServer().getPluginManager().registerEvents(new MonListener(this, bagCommand), this);
-
-        // ✅ AJOUT IMPORTANT : enregistrement du listener de chat
         getServer().getPluginManager().registerEvents(new ChatListener(this), this);
+        getServer().getPluginManager().registerEvents(new LoginListener(this), this);
 
         loadExistingWorlds();
 
@@ -127,6 +136,10 @@ public final class PluginSasha extends JavaPlugin implements Listener {
         }
 
         getLogger().info("Tous les mondes existants ont été chargés !");
+    }
+
+    public LoginManager getLoginManager() {
+        return loginManager;
     }
 
 }
